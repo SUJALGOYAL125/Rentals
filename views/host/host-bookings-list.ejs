@@ -1,0 +1,90 @@
+<%- include('../partials/head') %>
+  </head>
+  <body>
+    <%- include('../partials/nav') %>
+    <main class="container mx-auto bg-white shadow-lg rounded-lg p-8 mt-10 max-w-6xl">
+      <h2 class="text-3xl text-red-500 font-bold text-center mb-6">
+        Bookings on Your Properties
+      </h2>
+
+      <% if (bookings.length === 0) { %>
+        <div class="w-full flex flex-col items-center justify-center py-16">
+          <div class="bg-red-100 text-red-500 rounded-full p-6 mb-6 shadow-md">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                class="w-12 h-12"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+              <path stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="text-2xl font-semibold text-gray-700 mb-2">
+            No Bookings Yet
+          </h3>
+          <p class="text-gray-500 text-center max-w-md">
+            No one has booked your properties yet. Once a guest books, it'll show up here.
+          </p>
+        </div>
+      <% } else { %>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b-2 border-gray-200 text-gray-600 text-sm uppercase">
+                <th class="py-3 px-4">Property</th>
+                <th class="py-3 px-4">Guest</th>
+                <th class="py-3 px-4">Check In</th>
+                <th class="py-3 px-4">Check Out</th>
+                <th class="py-3 px-4">Guests</th>
+                <th class="py-3 px-4">Total</th>
+                <th class="py-3 px-4">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% bookings.forEach(booking => { %>
+                <tr class="border-b border-gray-100 hover:bg-gray-50 transition duration-200">
+                  <td class="py-3 px-4 font-semibold text-gray-800">
+                    <% if (booking.home) { %>
+                      <%= booking.home.houseName %>
+                    <% } else { %>
+                      <span class="text-gray-400 italic">Deleted property</span>
+                    <% } %>
+                  </td>
+                  <td class="py-3 px-4 text-gray-700">
+                    <% if (booking.user) { %>
+                      <div><%= booking.user.firstName %> <%= booking.user.lastName %></div>
+                      <div class="text-sm text-gray-500"><%= booking.user.email %></div>
+                    <% } else { %>
+                      <span class="text-gray-400 italic">Unknown guest</span>
+                    <% } %>
+                  </td>
+                  <td class="py-3 px-4 text-gray-700">
+                    <%= new Date(booking.checkInDate).toLocaleDateString() %>
+                  </td>
+                  <td class="py-3 px-4 text-gray-700">
+                    <%= new Date(booking.checkOutDate).toLocaleDateString() %>
+                  </td>
+                  <td class="py-3 px-4 text-gray-700">
+                    <%= booking.guests %>
+                  </td>
+                  <td class="py-3 px-4 font-bold text-red-500">
+                    Rs<%= booking.totalPrice %>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span class="<%= booking.status === 'confirmed' ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600' %> text-xs font-semibold px-3 py-1 rounded-full capitalize">
+                      <%= booking.status %>
+                    </span>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+      <% } %>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,83 @@
+<%- include('../partials/head') %>
+  </head>
+  <body>
+    <%- include('../partials/nav') %>
+    <main class="container mx-auto bg-white shadow-lg rounded-lg p-8 mt-10 max-w-6xl">
+      <h2 class="text-3xl text-red-500 font-bold text-center mb-8">
+        My Bookings
+      </h2>
+
+      <div class="flex flex-wrap justify-center gap-6">
+
+        <% if (bookings.length === 0) { %>
+          <div class="w-full flex flex-col items-center justify-center py-16">
+            <div class="bg-red-100 text-red-500 rounded-full p-6 mb-6 shadow-md">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                  class="w-12 h-12"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor">
+                <path stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-2">
+              No Bookings Yet
+            </h3>
+
+            <p class="text-gray-500 text-center max-w-md mb-6">
+              You haven't booked any homes yet. Start exploring to plan your next stay.
+            </p>
+
+            <a href="/homes"
+              class="px-6 py-3 bg-red-500 text-white rounded-full shadow-md hover:bg-red-600 transition duration-300">
+              Browse Homes
+            </a>
+          </div>
+        <% } %>
+
+        <% bookings.forEach(booking => { %>
+          <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 w-full max-w-sm">
+            <% if (booking.home) { %>
+              <img src="<%= booking.home.photo %>" alt="<%= booking.home.houseName %>" class="w-full h-48 object-cover">
+              <div class="p-4">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2"><%= booking.home.houseName %></h3>
+                <p class="text-gray-600 mb-2">
+                  <i class="fas fa-map-marker-alt mr-2"></i><%= booking.home.location %>
+                </p>
+            <% } else { %>
+              <div class="p-4">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Home no longer available</h3>
+            <% } %>
+
+                <div class="flex justify-between items-center mb-2 text-sm text-gray-700">
+                  <span><strong>Check In:</strong> <%= new Date(booking.checkInDate).toLocaleDateString() %></span>
+                </div>
+                <div class="flex justify-between items-center mb-2 text-sm text-gray-700">
+                  <span><strong>Check Out:</strong> <%= new Date(booking.checkOutDate).toLocaleDateString() %></span>
+                </div>
+                <div class="flex justify-between items-center mb-2 text-sm text-gray-700">
+                  <span><strong>Guests:</strong> <%= booking.guests %></span>
+                </div>
+
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-lg font-bold text-red-500">Rs<%= booking.totalPrice %></span>
+                  <span class="<%= booking.status === 'confirmed' ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600' %> text-xs font-semibold px-3 py-1 rounded-full capitalize">
+                    <%= booking.status %>
+                  </span>
+                </div>
+
+                <% if (booking.home) { %>
+                  <a class="bg-blue-300 p-2 inline-block rounded" href="/homes/<%= booking.home._id %>">View Home</a>
+                <% } %>
+              </div>
+          </div>
+        <% }) %>
+
+      </div>
+    </main>
+  </body>
+</html>

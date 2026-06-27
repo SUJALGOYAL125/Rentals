@@ -1,0 +1,58 @@
+<%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/nav') %>
+
+  <main class="container mx-auto mt-20 text-center">
+    <h2 class="text-4xl font-bold mb-10 text-red-500">Book <%= home.houseName %></h2>
+
+    <% if (typeof errorMsg !== 'undefined' && errorMsg) { %>
+      <div class="max-w-md mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        <%= errorMsg %>
+      </div>
+    <% } %>
+
+    <form action="/bookings" method="POST" class="max-w-md mx-auto bg-white shadow-lg rounded-lg p-8">
+      <input type="hidden" name="homeId" value="<%= home._id %>">
+
+      <div class="mb-6">
+        <label class="block text-gray-700 font-semibold mb-2">Check In Date</label>
+        <input 
+          type="date" 
+          name="checkInDate" 
+          required
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-500 focus:outline-none transition duration-300"
+        >
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-gray-700 font-semibold mb-2">Check Out Date</label>
+        <input 
+          type="date" 
+          name="checkOutDate" 
+          required
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-500 focus:outline-none transition duration-300"
+        >
+      </div>
+
+      <div class="mb-8">
+        <label class="block text-gray-700 font-semibold mb-2">Number of Guests</label>
+        <input 
+          type="number" 
+          name="guests" 
+          value="1" 
+          min="1"
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-500 focus:outline-none transition duration-300"
+        >
+      </div>
+
+      <button 
+        type="submit" 
+        class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 shadow-md hover:shadow-lg"
+      >
+        Book Now
+      </button>
+    </form>
+  </main>
+</body>
+</html>
