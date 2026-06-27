@@ -1,6 +1,7 @@
 const Home = require("../models/home");
 const User = require('../models/user');
-const Booking = require('../models/booking');       
+const Booking = require('../models/booking');  
+const cloudinary = require("cloudinary").v2;     
 const fs = require('fs');
 
 exports.getAddHome = (req, res, next) => {
@@ -59,6 +60,7 @@ exports.postAddHome = (req, res, next) => {
     return res.status(422).send("No image provided");
   }
   const photo = req.file.path;
+  const photoPublicId = req.file.filename;
 
   const home = new Home({
     houseName,
@@ -66,6 +68,7 @@ exports.postAddHome = (req, res, next) => {
     location,
     rating,
     photo,
+    photoPublicId,
     description,
     owner: req.user._id   
   });
@@ -92,12 +95,15 @@ exports.postEditHome = (req, res, next) => {
       home.description = description;
 
       if(req.file){
-        fs.unlink(home.photo, (err) => {
-          if(err){
-            console.log("error while deleting file", err);
-          }
-        })
+        if (home.photoPublicId) {
+          cloudinary.uploader.destroy(home.photoPublicId, (err, result) => {
+            if (err) {
+              console.log("error while deleting old Cloudinary image", err);
+            }
+          });
+        }
         home.photo = req.file.path;
+        home.photoPublicId = req.file.filename;
       }
 
       home.save().then((result) => {
@@ -122,7 +128,13 @@ exports.postDeleteHome = (req, res, next) => {
       if (!home.owner.equals(req.user._id)) {
         return res.status(403).send("Not authorized");
       }
-
+      if (home.photoPublicId) {
+        cloudinary.uploader.destroy(home.photoPublicId, (err, result) => {
+          if (err) {
+            console.log("error while deleting Cloudinary image on home delete", err);
+          }
+        });
+      }
       return Home.findByIdAndDelete(homeId);
     })
     .then(() => {

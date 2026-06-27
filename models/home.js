@@ -19,6 +19,7 @@ const homeSchema = mongoose.Schema({
     required: true,
   },
   photo: String,
+  photoPublicId: String,
   description: String,
   
   owner: {

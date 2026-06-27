@@ -27,45 +27,53 @@ app.set("views", "views");
 const DB_PATH = process.env.DB_PATH;
 
 
-const randomString = (length) => {
-  const characters = 'abcdefghijklmnopqrstuvwxyz';
-  let result = '';
-  for(let i = 0; i < length ; i++){
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-}
+// const randomString = (length) => {
+//   const characters = 'abcdefghijklmnopqrstuvwxyz';
+//   let result = '';
+//   for(let i = 0; i < length ; i++){
+//     result += characters.charAt(Math.floor(Math.random() * characters.length));
+//   }
+//   return result;
+// }
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/')
-  },
-  filename: (req, file, cb) => {
-    cb(null, randomString(10) + '-' + file.originalname);
-  }
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const fileFilter = (req, file, cb) => {
-  if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg'){
-    cb(null, true);
-  } 
-  else {
-    cb(null, false);
-  }
-  return;
-}
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "rentals-homes",
+    allowed_formats: ["jpg", "jpeg", "png"],
+  },
+});
 
-const multerOptions = {
-  storage, fileFilter
-}
+// const fileFilter = (req, file, cb) => {
+//   if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg'){
+//     cb(null, true);
+//   } 
+//   else {
+//     cb(null, false);
+//   }
+//   return;
+// }
+
+// const multerOptions = {
+//   storage, fileFilter
+// }
 
 app.use(express.static(path.join(rootDir, "public")));
 app.use(express.urlencoded({ extended: true }));
 //use to handle multer
-app.use(multer(multerOptions).single('photo'));
-app.use("/uploads", express.static(path.join(rootDir, 'uploads')));
-app.use("/host/uploads", express.static(path.join(rootDir, 'uploads')));
-app.use("/homes/uploads", express.static(path.join(rootDir, 'uploads')));
+app.use(multer({ storage: storage }).single('photo'));
+// app.use("/uploads", express.static(path.join(rootDir, 'uploads')));
+// app.use("/host/uploads", express.static(path.join(rootDir, 'uploads')));
+// app.use("/homes/uploads", express.static(path.join(rootDir, 'uploads')));
 
 
 const store = new MongoDBStore({
